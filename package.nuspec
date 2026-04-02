@@ -16,8 +16,8 @@
     <tags>docking winforms net-winforms docking-library dotnet dotnet9 windows windows-desktop windows-forms darkui</tags>
   </metadata>
   <files>
-    <file src="DarkUI\bin\Release\net9.0-windows\DarkUI.dll" target="lib\net9.0-windows" />
-    <file src="DarkUI\bin\Release\net9.0-windows\DarkUI.pdb" target="lib\net9.0-windows" />
+    <file src="DarkUI\bin\Release\net9.0-windows\DarkUI.dll" target="lib\net9.0-windows7.0" />
+    <file src="DarkUI\bin\Release\net9.0-windows\DarkUI.pdb" target="lib\net9.0-windows7.0" />
     <file src="icon-64.png" target="" />
   </files>
 </package>
