@@ -1,5 +1,8 @@
-﻿namespace DarkUI.Docking
+﻿using System.Runtime.Versioning;
+
+namespace DarkUI.Docking
 {
+    [SupportedOSPlatform("windows6.1")]
     internal class DockDropCollection
     {
         #region Property Region

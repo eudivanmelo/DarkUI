@@ -4,9 +4,11 @@ using DarkUI.Forms;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Win32
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DockContentDragFilter : IMessageFilter
     {
         #region Field Region

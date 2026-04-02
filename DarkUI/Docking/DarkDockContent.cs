@@ -2,10 +2,12 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Docking
 {
     [ToolboxItem(false)]
+    [SupportedOSPlatform("windows6.1")]
     public class DarkDockContent : UserControl
     {
         #region Event Handler Region

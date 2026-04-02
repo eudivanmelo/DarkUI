@@ -1,8 +1,11 @@
 ﻿using DarkUI.Renderers;
 using System.Windows.Forms;
 
+using System.Runtime.Versioning;
+
 namespace DarkUI.Controls
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DarkMenuStrip : MenuStrip
     {
         #region Constructor Region
@@ -16,3 +19,4 @@ namespace DarkUI.Controls
         #endregion
     }
 }
+

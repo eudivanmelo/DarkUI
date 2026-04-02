@@ -8,9 +8,11 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Controls
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DarkDropdownList : Control
     {
         #region Event Region

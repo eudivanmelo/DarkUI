@@ -1,9 +1,11 @@
 ﻿using DarkUI.Collections;
 using System;
 using System.Drawing;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Controls
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DarkTreeNode
     {
         #region Event Region

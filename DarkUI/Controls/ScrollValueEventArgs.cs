@@ -1,14 +1,13 @@
 ﻿using System;
 
+using System.Runtime.Versioning;
+
 namespace DarkUI.Controls
 {
-    public class ScrollValueEventArgs : EventArgs
+    [SupportedOSPlatform("windows6.1")]
+    public class ScrollValueEventArgs(int value) : EventArgs
     {
-        public int Value { get; private set; }
-
-        public ScrollValueEventArgs(int value)
-        {
-            Value = value;
-        }
+        public int Value { get; private set; } = value;
     }
 }
+

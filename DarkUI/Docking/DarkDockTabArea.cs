@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Docking
 {
+    [SupportedOSPlatform("windows6.1")]
     internal class DarkDockTabArea
     {
         #region Field Region

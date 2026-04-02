@@ -14,7 +14,7 @@ namespace DarkUI.Docking
 
         public DockPanelState()
         {
-            Regions = new List<DockRegionState>();
+            Regions = [];
         }
 
         #endregion

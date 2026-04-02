@@ -4,10 +4,13 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
+using System.Runtime.Versioning;
+
 namespace DarkUI.Controls
 {
     [ToolboxBitmap(typeof(Button))]
     [DefaultEvent("Click")]
+    [SupportedOSPlatform("windows6.1")]
     public class DarkButton : Button
     {
         #region Field Region
@@ -419,3 +422,4 @@ namespace DarkUI.Controls
         #endregion
     }
 }
+

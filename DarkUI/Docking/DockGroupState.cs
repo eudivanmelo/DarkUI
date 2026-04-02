@@ -16,7 +16,7 @@ namespace DarkUI.Docking
 
         public DockGroupState()
         {
-            Contents = new List<string>();
+            Contents = [];
         }
 
         #endregion

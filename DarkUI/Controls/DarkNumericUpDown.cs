@@ -7,8 +7,11 @@ using System.Reflection;
 using System.Security;
 using System.Windows.Forms;
 
+using System.Runtime.Versioning;
+
 namespace DarkUI.Controls
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DarkNumericUpDown : NumericUpDown
     {
         [Browsable(false)]
@@ -152,3 +155,4 @@ namespace DarkUI.Controls
         }
     }
 }
+

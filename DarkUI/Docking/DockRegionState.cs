@@ -19,7 +19,7 @@ namespace DarkUI.Docking
 
         public DockRegionState()
         {
-            Groups = new List<DockGroupState>();
+            Groups = [];
         }
 
         public DockRegionState(DarkDockArea area)

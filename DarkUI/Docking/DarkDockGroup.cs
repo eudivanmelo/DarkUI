@@ -6,10 +6,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Docking
 {
     [ToolboxItem(false)]
+    [SupportedOSPlatform("windows6.1")]
     public class DarkDockGroup : Panel
     {
         #region Field Region

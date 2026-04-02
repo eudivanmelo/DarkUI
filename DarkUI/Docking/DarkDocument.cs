@@ -1,9 +1,11 @@
 ﻿using DarkUI.Config;
 using System.ComponentModel;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Docking
 {
     [ToolboxItem(false)]
+    [SupportedOSPlatform("windows6.1")]
     public class DarkDocument : DarkDockContent
     {
         #region Property Region

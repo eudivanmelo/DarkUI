@@ -2,9 +2,11 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Win32
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DockResizeFilter : IMessageFilter
     {
         #region Field Region

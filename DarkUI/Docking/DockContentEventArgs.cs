@@ -2,13 +2,8 @@
 
 namespace DarkUI.Docking
 {
-    public class DockContentEventArgs : EventArgs
+    public class DockContentEventArgs(DarkDockContent content) : EventArgs
     {
-        public DarkDockContent Content { get; private set; }
-
-        public DockContentEventArgs(DarkDockContent content)
-        {
-            Content = content;
-        }
+        public DarkDockContent Content { get; private set; } = content;
     }
 }

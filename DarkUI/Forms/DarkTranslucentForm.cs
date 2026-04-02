@@ -1,8 +1,10 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Forms
 {
+    [SupportedOSPlatform("windows6.1")]
     internal class DarkTranslucentForm : Form
     {
         #region Property Region

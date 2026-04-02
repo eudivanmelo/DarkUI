@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Extensions
 {
+    [SupportedOSPlatform("windows6.1")]
     internal static class BitmapExtensions
     {
         internal static Bitmap SetColor(this Bitmap bitmap, Color color)

@@ -4,8 +4,11 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
+using System.Runtime.Versioning;
+
 namespace DarkUI.Controls
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DarkGroupBox : GroupBox
     {
         private Color _borderColor = Colors.DarkBorder;
@@ -78,3 +81,4 @@ namespace DarkUI.Controls
         }
     }
 }
+

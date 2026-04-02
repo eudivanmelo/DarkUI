@@ -2,8 +2,11 @@
 using System;
 using System.Drawing;
 
+using System.Runtime.Versioning;
+
 namespace DarkUI.Controls
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DarkListItem
     {
         #region Event Region
@@ -61,3 +64,4 @@ namespace DarkUI.Controls
         #endregion
     }
 }
+

@@ -2,9 +2,11 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Forms
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DarkForm : Form
     {
         #region Field Region
