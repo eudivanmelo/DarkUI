@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package >
   <metadata>
-    <id>DarkUI</id>
-    <version>2.0.2</version>
-    <title>DarkUI</title>
-    <authors>Robin Perris</authors>
+    <id>DarkUI.Next</id>
+    <version>$version$</version>
+    <title>DarkUI Next</title>
+    <authors>Robin Perris; Eudivan Melo</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
-    <projectUrl>http://www.darkui.com/</projectUrl>
+    <projectUrl>https://github.com/eudivanmelo/DarkUI</projectUrl>
     <icon>icon-64.png</icon>
-    <iconUrl>http://www.darkui.com/images/icon-64.png</iconUrl>
-    <description>Dark themed control and docking library for .NET WinForms</description>
-    <releaseNotes>Fixed an issue where clearing the items from a DarkDropDown did not also clear the menu</releaseNotes>
-    <copyright>Copyright © Robin Perris</copyright>
-    <tags>docking winforms net-winforms docking-library docking-application c-sharp dotnet dotnet-framework visual-studio visual-studio-themes windows windows-desktop windows-forms</tags>
+    <iconUrl>https://github.com/eudivanmelo/DarkUI/blob/master/icon-64.png</iconUrl>
+    <description>DarkUI Next is a dark themed control and docking library for .NET WinForms, based on the original DarkUI project.</description>
+    <releaseNotes>See release notes on GitHub for version specific changes.</releaseNotes>
+    <copyright>Copyright (c) Robin Perris and DarkUI Next Contributors</copyright>
+    <tags>docking winforms net-winforms docking-library dotnet dotnet9 windows windows-desktop windows-forms darkui</tags>
   </metadata>
   <files>
-    <file src="DarkUI\bin\Release\DarkUI.dll" target="lib" />
+    <file src="DarkUI\bin\Release\net9.0-windows\DarkUI.dll" target="lib\net9.0-windows" />
+    <file src="DarkUI\bin\Release\net9.0-windows\DarkUI.pdb" target="lib\net9.0-windows" />
     <file src="icon-64.png" target="" />
   </files>
 </package>

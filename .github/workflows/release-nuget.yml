@@ -1,0 +1,73 @@
+name: Build and Release NuGet
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pack:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore
+        run: dotnet restore DarkUI.sln
+
+      - name: Build library
+        run: dotnet build .\DarkUI\DarkUI.csproj -c Release --no-restore
+
+      - name: Compute package version
+        id: version
+        shell: pwsh
+        run: |
+          [xml]$nuspec = Get-Content .\package.nuspec
+          $baseVersion = $nuspec.package.metadata.version
+
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $packageVersion = $env:GITHUB_REF.Substring('refs/tags/v'.Length)
+          }
+          else {
+            $packageVersion = "$baseVersion-ci.$env:GITHUB_RUN_NUMBER"
+          }
+
+          "PACKAGE_VERSION=$packageVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "version=$packageVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Pack nuspec
+        run: nuget pack .\package.nuspec -Version "$env:PACKAGE_VERSION" -OutputDirectory .\artifacts
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: artifacts\*.nupkg
+
+      - name: Push to NuGet Gallery
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push .\artifacts\*.nupkg --api-key "$env:NUGET_API_KEY" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts\*.nupkg
+          generate_release_notes: true

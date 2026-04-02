@@ -1,35 +1,26 @@
-<img src="http://www.darkui.com/images/logo-888.png">
+<img src="logo.png" alt="DarkUI Next logo">
 
-## DarkUI
-Dark themed control and docking library for .NET WinForms.
+## DarkUI Next
+Fork do DarkUI para .NET WinForms, atualizado para .NET 9.
 
-### About DarkUI
-DarkUI is an attempt to create a simple, extensible control library which emulates the look and feel of popular tabbed document interfaces such as Visual Studio, Photoshop, WebStorm, and XCode. Originally just a collection of bug fixes and enhancements built on top of WinForms, it has now evolved in to a fully working docking and control library.
+### Sobre o projeto
+O DarkUI original foi criado como uma biblioteca de controles e docking com tema escuro para WinForms, inspirada na aparência de interfaces como Visual Studio, Photoshop, WebStorm e Xcode.
 
-Check out our [GitHub pages site](http://www.darkui.com).
+Este repositório é um fork evolutivo desse projeto e passa a se chamar DarkUI Next. A proposta é manter a base original, modernizar o alvo de plataforma e seguir evoluindo a biblioteca para cenários atuais do .NET.
 
-### Attribution
+Projeto original: [DarkUI](https://github.com/RobinPerris/DarkUI)
 
-Special thanks to the team over at [Ascension Game Dev](https://www.ascensiongamedev.com/) for expanding the library to include `DarkComboBox`, `DarkGroupBox`, and `DarkNumericUpDown`.
+### Agradecimentos
+Agradecimento especial a Robin Perris, autor original do DarkUI, pela base do projeto que tornou este fork possível.
 
-### How to use
-The best way to learn how to use DarkUI is to check out the Example project included with the source code. It'll show you how to use the majority of the forms, controls, and docking components.
+### Como usar
+A forma mais simples de começar é abrir o projeto Example incluído no repositório. Ele mostra a maior parte dos controles, formulários e componentes de docking disponíveis.
 
-You can also read the [GitHub project wiki](https://github.com/RobinPerris/DarkUI/wiki). This contains all the information you need to get started as well as more detailed information and guides.
+### Controles e recursos
+A biblioteca inclui controles como botões, caixas de seleção, combo boxes, list views, numeric up/down, tree view, status strip e componentes de docking.
 
-### Screenshots
-Game map editor
+### Atribuição
+Agradecimentos à equipe da [Ascension Game Dev](https://www.ascensiongamedev.com/) pelas expansões originais da biblioteca, incluindo `DarkComboBox`, `DarkGroupBox` e `DarkNumericUpDown`.
 
-![Game map editor](http://www.darkui.com/images/editor.png)
-
-Lua script editor
-
-![Lua script editor](http://www.darkui.com/images/lua.png)
-
-Example docking application
-
-![Example docking application](http://www.darkui.com/images/docking.png)
-
-Controls preview
-
-![Controls preview](http://www.darkui.com/images/controls.png)
+### Licença
+Este projeto mantém a licença MIT do repositório original. Veja o arquivo [LICENSE](LICENSE) para os termos completos.

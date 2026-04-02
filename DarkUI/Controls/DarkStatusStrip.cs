@@ -1,9 +1,11 @@
 ﻿using DarkUI.Config;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.Versioning;
 
 namespace DarkUI.Controls
 {
+    [SupportedOSPlatform("windows6.1")]
     public class DarkStatusStrip : StatusStrip
     {
         #region Constructor Region
@@ -26,20 +28,14 @@ namespace DarkUI.Controls
         {
             var g = e.Graphics;
 
-            using (var b = new SolidBrush(Colors.GreyBackground))
-            {
-                g.FillRectangle(b, ClientRectangle);
-            }
+            using var b = new SolidBrush(Colors.GreyBackground);
+            g.FillRectangle(b, ClientRectangle);
 
-            using (var p = new Pen(Colors.DarkBorder))
-            {
-                g.DrawLine(p, ClientRectangle.Left, 0, ClientRectangle.Right, 0);
-            }
+            using var p = new Pen(Colors.DarkBorder);
+            g.DrawLine(p, ClientRectangle.Left, 0, ClientRectangle.Right, 0);
 
-            using (var p = new Pen(Colors.LightBorder))
-            {
-                g.DrawLine(p, ClientRectangle.Left, 1, ClientRectangle.Right, 1);
-            }
+            using var p2 = new Pen(Colors.LightBorder);
+            g.DrawLine(p2, ClientRectangle.Left, 1, ClientRectangle.Right, 1);
         }
 
         #endregion
