@@ -1,4 +1,4 @@
-<img src="logo.png" alt="DarkUI Next logo" width="360" style="max-width: 100%; height: auto;">
+<img src="https://github.com/eudivanmelo/DarkUI/blob/master/logo.png" alt="DarkUI Next logo" width="360" style="max-width: 100%; height: auto;">
 
 ## DarkUI Next
 Fork do DarkUI para .NET WinForms, atualizado para .NET 9.
