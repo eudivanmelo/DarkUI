@@ -42,11 +42,9 @@ namespace DarkUI.Renderers
 
             if (e.ToolStrip.GetType() == typeof(ToolStripOverflow))
             {
-                using (var p = new Pen(Colors.GreyBackground))
-                {
-                    var rect = new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1);
-                    g.DrawRectangle(p, rect);
-                }
+                using var p = new Pen(Colors.GreyBackground);
+                var rect = new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1);
+                g.DrawRectangle(p, rect);
             }
         }
 
@@ -101,10 +99,8 @@ namespace DarkUI.Renderers
 
             if (e.Item.Selected || e.Item.Pressed)
             {
-                using (var b = new SolidBrush(Colors.GreySelection))
-                {
-                    g.FillRectangle(b, rect);
-                }
+                using var b = new SolidBrush(Colors.GreySelection);
+                g.FillRectangle(b, rect);
             }
         }
 

@@ -32,6 +32,8 @@ namespace DarkUI.Controls
 
             base.ForeColor = Color.Gainsboro;
             base.BackColor = Colors.LightBackground;
+
+            
             
             Controls[0].Paint += DarkNumericUpDown_Paint;
 
@@ -44,7 +46,7 @@ namespace DarkUI.Controls
 
                 if (method != null)
                 {
-                    object[] param = { ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true };
+                    object[] param = [ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true];
                     method.Invoke(Controls[0], param);
                 }
             }
@@ -147,11 +149,9 @@ namespace DarkUI.Controls
             if (Focused && TabStop)
                 borderColor = Colors.BlueHighlight;
 
-            using (var p = new Pen(borderColor, 1))
-            {
-                var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
-                g.DrawRectangle(p, modRect);
-            }
+            using var p = new Pen(borderColor, 1);
+            var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
+            g.DrawRectangle(p, modRect);
         }
     }
 }
