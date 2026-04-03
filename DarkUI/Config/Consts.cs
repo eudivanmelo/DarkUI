@@ -11,7 +11,7 @@
         public const int CheckBoxSize = 12;
         public const int RadioButtonSize = 12;
 
-        public const int ToolWindowHeaderSize = 25;
+        public const int ToolWindowHeaderSize = 28;
         public const int DocumentTabAreaSize = 24;
         public const int ToolWindowTabAreaSize = 21;
     }

@@ -1,7 +1,7 @@
 ﻿using DarkUI.Config;
+using DarkUI.Icons;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System;
 using System.Runtime.Versioning;
@@ -20,18 +20,14 @@ namespace DarkUI.Docking
         private bool _closeButtonPressed = false;
         private bool _pinButtonHot = false;
         private bool _pinButtonPressed = false;
-        private bool _isPinned = true;
+        private bool _isPinned = false;
         private bool _showCloseButton = true;
-        private bool _showPinButton = true;
+        private bool _showPinButton = false;
 
         private Rectangle _headerRect;
         private bool _shouldDrag;
 
-        private const int CornerRadius = 6;
-        private const int HeaderHeight = Consts.ToolWindowHeaderSize + 3;
-        private const int HeaderButtonSize = 14;
-        private const int HeaderButtonRightMargin = 6;
-        private const int HeaderButtonSpacing = 4;
+        private const int HeaderButtonSpacing = 8;
 
         #endregion
 
@@ -124,8 +120,7 @@ namespace DarkUI.Docking
                      ControlStyles.UserPaint, true);
 
             BackColor = Colors.GreyBackground;
-            // Reserve 1px around the content so the rounded frame remains visible.
-            base.Padding = new Padding(1, HeaderHeight, 1, 1);
+            base.Padding = new Padding(0, Consts.ToolWindowHeaderSize, 0, 0);
 
             UpdateHeaderLayout();
         }
@@ -149,19 +144,19 @@ namespace DarkUI.Docking
                 X = ClientRectangle.Left,
                 Y = ClientRectangle.Top,
                 Width = ClientRectangle.Width,
-                Height = HeaderHeight
+                Height = Consts.ToolWindowHeaderSize
             };
 
-            var nextRight = ClientRectangle.Right - HeaderButtonRightMargin;
+            var nextRight = ClientRectangle.Right - 8;
 
             if (ShowCloseButton)
             {
                 _closeButtonRect = new Rectangle
                 {
-                    X = nextRight - HeaderButtonSize,
-                    Y = ClientRectangle.Top + (HeaderHeight / 2) - (HeaderButtonSize / 2),
-                    Width = HeaderButtonSize,
-                    Height = HeaderButtonSize
+                    X = nextRight - DockIcons.tw_close.Width,
+                    Y = ClientRectangle.Top + (Consts.ToolWindowHeaderSize / 2) - (DockIcons.tw_close.Height / 2),
+                    Width = DockIcons.tw_close.Width,
+                    Height = DockIcons.tw_close.Height
                 };
 
                 nextRight = _closeButtonRect.Left - HeaderButtonSpacing;
@@ -173,51 +168,19 @@ namespace DarkUI.Docking
 
             if (ShowPinButton)
             {
+                var pinSize = DockIcons.tw_close.Width;
                 _pinButtonRect = new Rectangle
                 {
-                    X = nextRight - HeaderButtonSize,
-                    Y = ClientRectangle.Top + (HeaderHeight / 2) - (HeaderButtonSize / 2),
-                    Width = HeaderButtonSize,
-                    Height = HeaderButtonSize
+                    X = nextRight - pinSize,
+                    Y = ClientRectangle.Top + (Consts.ToolWindowHeaderSize / 2) - (pinSize / 2),
+                    Width = pinSize,
+                    Height = pinSize
                 };
             }
             else
             {
                 _pinButtonRect = Rectangle.Empty;
             }
-
-            using (var path = CreateRoundedRectPath(ClientRectangle, CornerRadius))
-            {
-                var oldRegion = Region;
-                Region = new Region(path);
-
-                if (oldRegion != null)
-                    oldRegion.Dispose();
-            }
-        }
-
-        private static GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)
-        {
-            var path = new GraphicsPath();
-
-            if (rect.Width <= 0 || rect.Height <= 0)
-                return path;
-
-            var diameter = radius * 2;
-
-            if (radius <= 0 || diameter >= rect.Width || diameter >= rect.Height)
-            {
-                path.AddRectangle(rect);
-                return path;
-            }
-
-            path.AddArc(rect.Left, rect.Top, diameter, diameter, 180, 90);
-            path.AddArc(rect.Right - diameter, rect.Top, diameter, diameter, 270, 90);
-            path.AddArc(rect.Right - diameter, rect.Bottom - diameter, diameter, diameter, 0, 90);
-            path.AddArc(rect.Left, rect.Bottom - diameter, diameter, diameter, 90, 90);
-            path.CloseFigure();
-
-            return path;
         }
 
         private void TogglePinned()
@@ -328,68 +291,54 @@ namespace DarkUI.Docking
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
 
             var isActive = IsActive();
 
-            using (var outerPath = CreateRoundedRectPath(new Rectangle(0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1), CornerRadius))
+            // Fill body
+            using (var b = new SolidBrush(Colors.GreyBackground))
             {
-                var bodyColor = isActive ? Colors.DarkBlueBackground : Colors.GreyBackground;
-
-                using (var b = new SolidBrush(bodyColor))
-                {
-                    g.FillPath(b, outerPath);
-                }
-
-                var headerRect = new Rectangle(1, 1, Math.Max(0, ClientRectangle.Width - 2), Math.Max(0, HeaderHeight - 1));
-
-                var state = g.Save();
-                g.SetClip(outerPath);
-                using (var b = new SolidBrush(Colors.HeaderBackground))
-                {
-                    g.FillRectangle(b, headerRect);
-                }
-                g.Restore(state);
-
-                using (var p = new Pen(Colors.DarkBorder))
-                {
-                    g.DrawLine(p, 1, HeaderHeight - 1, ClientRectangle.Width - 2, HeaderHeight - 1);
-                }
-
-                // Subtle inner frame so the rounded body is readable across the whole component.
-                using (var innerPath = CreateRoundedRectPath(new Rectangle(1, 1, ClientRectangle.Width - 3, ClientRectangle.Height - 3), Math.Max(0, CornerRadius - 1)))
-                {
-                    var innerColor = isActive ? Colors.DarkBlueBorder : Colors.LightBorder;
-                    using (var p = new Pen(Color.FromArgb(120, innerColor)))
-                    {
-                        g.DrawPath(p, innerPath);
-                    }
-                }
-
-                var borderColor = isActive ? Colors.BlueSelection : Colors.DarkBorder;
-                using (var p = new Pen(borderColor))
-                {
-                    g.DrawPath(p, outerPath);
-                }
+                g.FillRectangle(b, ClientRectangle);
             }
 
-            var xOffset = 8;
+            // Draw header
+            var bgColor = isActive ? Colors.BlueBackground : Colors.HeaderBackground;
+            var darkColor = isActive ? Colors.DarkBlueBorder : Colors.DarkBorder;
+            var lightColor = isActive ? Colors.LightBlueBorder : Colors.LightBorder;
+
+            using (var b = new SolidBrush(bgColor))
+            {
+                var bgRect = new Rectangle(0, 0, ClientRectangle.Width, Consts.ToolWindowHeaderSize);
+                g.FillRectangle(b, bgRect);
+            }
+
+            using (var p = new Pen(darkColor))
+            {
+                g.DrawLine(p, ClientRectangle.Left, 0, ClientRectangle.Right, 0);
+                g.DrawLine(p, ClientRectangle.Left, Consts.ToolWindowHeaderSize - 1, ClientRectangle.Right, Consts.ToolWindowHeaderSize - 1);
+            }
+
+            using (var p = new Pen(lightColor))
+            {
+                g.DrawLine(p, ClientRectangle.Left, 1, ClientRectangle.Right, 1);
+            }
+
+            var xOffset = 10;
 
             if (Icon != null)
             {
-                g.DrawImageUnscaled(Icon, ClientRectangle.Left + 6, ClientRectangle.Top + (HeaderHeight / 2) - (Icon.Height / 2) + 1);
-                xOffset = Icon.Width + 10;
+                g.DrawImageUnscaled(Icon, ClientRectangle.Left + 5, ClientRectangle.Top + (Consts.ToolWindowHeaderSize / 2) - (Icon.Height / 2) + 1);
+                xOffset = Icon.Width + 8;
             }
 
             using (var b = new SolidBrush(Colors.LightText))
             {
-                var buttonsLeft = ClientRectangle.Right - HeaderButtonRightMargin;
+                var buttonsLeft = ClientRectangle.Right - 4;
                 if (ShowCloseButton)
                     buttonsLeft = Math.Min(buttonsLeft, _closeButtonRect.Left);
                 if (ShowPinButton)
                     buttonsLeft = Math.Min(buttonsLeft, _pinButtonRect.Left);
 
-                var textRect = new Rectangle(xOffset, 0, Math.Max(0, (buttonsLeft - 6) - xOffset), HeaderHeight);
+                var textRect = new Rectangle(xOffset, 1, Math.Max(0, buttonsLeft - 6 - xOffset), Consts.ToolWindowHeaderSize);
 
                 var format = new StringFormat
                 {
@@ -404,74 +353,36 @@ namespace DarkUI.Docking
 
             if (ShowPinButton)
             {
-                DrawHeaderButton(g, _pinButtonRect, _pinButtonHot, _pinButtonPressed, isActive);
                 DrawPinGlyph(g, _pinButtonRect, IsPinned);
             }
 
             if (ShowCloseButton)
             {
-                DrawHeaderButton(g, _closeButtonRect, _closeButtonHot, _closeButtonPressed, isActive);
-                DrawCloseGlyph(g, _closeButtonRect);
-            }
-        }
+                var closeImg = _closeButtonHot ? DockIcons.tw_close_selected : DockIcons.tw_close;
+                if (isActive)
+                    closeImg = _closeButtonHot ? DockIcons.tw_active_close_selected : DockIcons.tw_active_close;
 
-        private static void DrawHeaderButton(Graphics g, Rectangle rect, bool isHot, bool isPressed, bool isActive)
-        {
-            Color fillColor;
-
-            if (isPressed)
-                fillColor = Color.FromArgb(90, isActive ? Colors.BlueSelection : Colors.GreySelection);
-            else if (isHot)
-                fillColor = Color.FromArgb(60, isActive ? Colors.BlueSelection : Colors.GreySelection);
-            else
-                fillColor = Color.FromArgb(30, Colors.DarkBorder);
-
-            using (var path = CreateRoundedRectPath(rect, 3))
-            {
-                using (var b = new SolidBrush(fillColor))
-                {
-                    g.FillPath(b, path);
-                }
-
-                using (var p = new Pen(Color.FromArgb(120, Colors.DarkBorder)))
-                {
-                    g.DrawPath(p, path);
-                }
-            }
-        }
-
-        private static void DrawCloseGlyph(Graphics g, Rectangle rect)
-        {
-            using (var p = new Pen(Colors.LightText, 1.6f))
-            {
-                p.StartCap = LineCap.Round;
-                p.EndCap = LineCap.Round;
-
-                var pad = 4;
-                g.DrawLine(p, rect.Left + pad, rect.Top + pad, rect.Right - pad, rect.Bottom - pad);
-                g.DrawLine(p, rect.Right - pad, rect.Top + pad, rect.Left + pad, rect.Bottom - pad);
+                g.DrawImageUnscaled(closeImg, _closeButtonRect.Left, _closeButtonRect.Top);
             }
         }
 
         private static void DrawPinGlyph(Graphics g, Rectangle rect, bool isPinned)
         {
-            using (var p = new Pen(Colors.LightText, 1.5f))
+            var glyphColor = Colors.LightText;
+            using (var p = new Pen(glyphColor, 1.2f))
             {
-                p.StartCap = LineCap.Round;
-                p.EndCap = LineCap.Round;
-
                 if (isPinned)
                 {
                     var midX = rect.Left + (rect.Width / 2);
-                    g.DrawLine(p, midX - 4, rect.Top + 5, midX + 4, rect.Top + 5);
-                    g.DrawLine(p, midX, rect.Top + 5, midX, rect.Bottom - 4);
-                    g.DrawLine(p, midX - 2, rect.Bottom - 4, midX + 2, rect.Bottom - 4);
+                    g.DrawLine(p, midX - 3, rect.Top + 4, midX + 3, rect.Top + 4);
+                    g.DrawLine(p, midX, rect.Top + 4, midX, rect.Bottom - 3);
+                    g.DrawLine(p, midX - 1, rect.Bottom - 3, midX + 1, rect.Bottom - 3);
                 }
                 else
                 {
-                    g.DrawLine(p, rect.Left + 4, rect.Top + 5, rect.Right - 4, rect.Bottom - 5);
-                    g.DrawLine(p, rect.Left + 6, rect.Top + 5, rect.Right - 4, rect.Top + 5);
-                    g.DrawLine(p, rect.Right - 4, rect.Top + 5, rect.Right - 4, rect.Bottom - 7);
+                    g.DrawLine(p, rect.Left + 3, rect.Top + 4, rect.Right - 3, rect.Bottom - 4);
+                    g.DrawLine(p, rect.Left + 4, rect.Top + 4, rect.Right - 3, rect.Top + 4);
+                    g.DrawLine(p, rect.Right - 3, rect.Top + 4, rect.Right - 3, rect.Bottom - 6);
                 }
             }
         }

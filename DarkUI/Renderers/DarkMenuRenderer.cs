@@ -2,7 +2,9 @@
 using DarkUI.Controls;
 using DarkUI.Icons;
 using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Runtime.Versioning;
 
@@ -134,6 +136,44 @@ namespace DarkUI.Renderers
                     }
                 }
             }
+        }
+
+        protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+        {
+            if (e.Item is ToolStripMenuItem menuItem)
+            {
+                var shortcutText = menuItem.ShortcutKeyDisplayString;
+
+                if (string.IsNullOrEmpty(shortcutText) && menuItem.ShowShortcutKeys && menuItem.ShortcutKeys != Keys.None)
+                {
+                    shortcutText = TypeDescriptor.GetConverter(typeof(Keys))
+                        .ConvertToString(null, CultureInfo.CurrentUICulture, menuItem.ShortcutKeys);
+                }
+
+                var isShortcutText = string.Equals(
+                    e.Text?.Trim(),
+                    shortcutText?.Trim(),
+                    StringComparison.Ordinal);
+
+                if (isShortcutText)
+                {
+                    var textBase = e.Item.Enabled ? Colors.LightText : Colors.DisabledText;
+                    var bgBase = e.Item.Selected ? Colors.GreyHighlight : e.Item.BackColor;
+                    const float simulatedAlpha = 0.62f;
+
+                    var r = (int)(textBase.R * simulatedAlpha + bgBase.R * (1f - simulatedAlpha));
+                    var g = (int)(textBase.G * simulatedAlpha + bgBase.G * (1f - simulatedAlpha));
+                    var b = (int)(textBase.B * simulatedAlpha + bgBase.B * (1f - simulatedAlpha));
+
+                    e.TextColor = Color.FromArgb(255, r, g, b);
+                }
+                else
+                {
+                    e.TextColor = e.Item.Enabled ? Colors.LightText : Colors.DisabledText;
+                }
+            }
+
+            base.OnRenderItemText(e);
         }
 
         #endregion
