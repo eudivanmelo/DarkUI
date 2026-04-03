@@ -23,6 +23,8 @@ namespace DarkUI.Docking
         private bool _isPinned = false;
         private bool _showCloseButton = true;
         private bool _showPinButton = false;
+        private Size _dockedMinimumSize = new(50, 50);
+        private Size _dockedMaximumSize = Size.Empty;
 
         private Rectangle _headerRect;
         private bool _shouldDrag;
@@ -108,6 +110,43 @@ namespace DarkUI.Docking
         }
 
         public event EventHandler PinnedChanged;
+        public event EventHandler DockedSizeConstraintsChanged;
+
+        [Category("Layout")]
+        [Description("Determines the minimum size that this tool window can have while docked.")]
+        [DefaultValue(typeof(Size), "50, 50")]
+        public Size DockedMinimumSize
+        {
+            get { return _dockedMinimumSize; }
+            set
+            {
+                var normalized = new Size(Math.Max(0, value.Width), Math.Max(0, value.Height));
+                if (_dockedMinimumSize == normalized)
+                    return;
+
+                _dockedMinimumSize = normalized;
+                EnsureValidDockedBounds();
+                RaiseDockedSizeConstraintsChanged();
+            }
+        }
+
+        [Category("Layout")]
+        [Description("Determines the maximum size that this tool window can have while docked. Set width and/or height to 0 for no maximum.")]
+        [DefaultValue(typeof(Size), "0, 0")]
+        public Size DockedMaximumSize
+        {
+            get { return _dockedMaximumSize; }
+            set
+            {
+                var normalized = new Size(Math.Max(0, value.Width), Math.Max(0, value.Height));
+                if (_dockedMaximumSize == normalized)
+                    return;
+
+                _dockedMaximumSize = normalized;
+                EnsureValidDockedBounds();
+                RaiseDockedSizeConstraintsChanged();
+            }
+        }
 
         #endregion
 
@@ -186,6 +225,23 @@ namespace DarkUI.Docking
         private void TogglePinned()
         {
             IsPinned = !IsPinned;
+        }
+
+        private void EnsureValidDockedBounds()
+        {
+            var maxWidth = _dockedMaximumSize.Width;
+            if (maxWidth > 0 && maxWidth < _dockedMinimumSize.Width)
+                _dockedMaximumSize = new Size(_dockedMinimumSize.Width, _dockedMaximumSize.Height);
+
+            var maxHeight = _dockedMaximumSize.Height;
+            if (maxHeight > 0 && maxHeight < _dockedMinimumSize.Height)
+                _dockedMaximumSize = new Size(_dockedMaximumSize.Width, _dockedMinimumSize.Height);
+        }
+
+        private void RaiseDockedSizeConstraintsChanged()
+        {
+            if (DockedSizeConstraintsChanged != null)
+                DockedSizeConstraintsChanged(this, EventArgs.Empty);
         }
 
         #endregion

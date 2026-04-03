@@ -75,34 +75,22 @@ namespace DarkUI.Docking
             switch (_splitterType)
             {
                 case DarkSplitterType.Left:
-                    var leftX = Math.Max(bounds.Location.X - difference.X, _minimum);
-
-                    if (_maximum != 0 && leftX > _maximum)
-                        leftX = _maximum;
+                    var leftX = ClampCoordinate(bounds.Location.X - difference.X);
 
                     bounds.Location = new Point(leftX, bounds.Location.Y);
                     break;
                 case DarkSplitterType.Right:
-                    var rightX = Math.Max(bounds.Location.X - difference.X, _minimum);
-
-                    if (_maximum != 0 && rightX > _maximum)
-                        rightX = _maximum;
+                    var rightX = ClampCoordinate(bounds.Location.X - difference.X);
 
                     bounds.Location = new Point(rightX, bounds.Location.Y);
                     break;
                 case DarkSplitterType.Top:
-                    var topY = Math.Max(bounds.Location.Y - difference.Y, _minimum);
-
-                    if (_maximum != 0 && topY > _maximum)
-                        topY = _maximum;
+                    var topY = ClampCoordinate(bounds.Location.Y - difference.Y);
 
                     bounds.Location = new Point(bounds.Location.X, topY);
                     break;
                 case DarkSplitterType.Bottom:
-                    var bottomY = Math.Max(bounds.Location.Y - difference.Y, _minimum);
-
-                    if (_maximum != 0 && bottomY > _maximum)
-                        topY = _maximum;
+                    var bottomY = ClampCoordinate(bounds.Location.Y - difference.Y);
 
                     bounds.Location = new Point(bounds.Location.X, bottomY);
                     break;
@@ -116,16 +104,24 @@ namespace DarkUI.Docking
             switch (_splitterType)
             {
                 case DarkSplitterType.Left:
-                    _control.Width += difference.X;
+                    var targetLeftX = ClampCoordinate(Bounds.Location.X - difference.X);
+                    var leftDelta = targetLeftX - Bounds.Location.X;
+                    _control.Width -= leftDelta;
                     break;
                 case DarkSplitterType.Right:
-                    _control.Width -= difference.X;
+                    var targetRightX = ClampCoordinate(Bounds.Location.X - difference.X);
+                    var rightDelta = targetRightX - Bounds.Location.X;
+                    _control.Width += rightDelta;
                     break;
                 case DarkSplitterType.Top:
-                    _control.Height += difference.Y;
+                    var targetTopY = ClampCoordinate(Bounds.Location.Y - difference.Y);
+                    var topDelta = targetTopY - Bounds.Location.Y;
+                    _control.Height -= topDelta;
                     break;
                 case DarkSplitterType.Bottom:
-                    _control.Height -= difference.Y;
+                    var targetBottomY = ClampCoordinate(Bounds.Location.Y - difference.Y);
+                    var bottomDelta = targetBottomY - Bounds.Location.Y;
+                    _control.Height += bottomDelta;
                     break;
             }
 
@@ -135,26 +131,52 @@ namespace DarkUI.Docking
         public void UpdateBounds()
         {
             var bounds = _parentControl.RectangleToScreen(_control.Bounds);
+            var parentBounds = _parentControl.RectangleToScreen(_parentControl.ClientRectangle);
+
+            var minimumWidth = Math.Max(0, _control.MinimumSize.Width);
+            var minimumHeight = Math.Max(0, _control.MinimumSize.Height);
+            var maximumWidth = Math.Max(0, _control.MaximumSize.Width);
+            var maximumHeight = Math.Max(0, _control.MaximumSize.Height);
 
             switch (_splitterType)
             {
                 case DarkSplitterType.Left:
                     Bounds = new Rectangle(bounds.Left - 2, bounds.Top, 5, bounds.Height);
-                    _maximum = bounds.Right - 2 - _control.MinimumSize.Width;
+                    _minimum = parentBounds.Left - 2;
+                    if (maximumWidth > 0)
+                        _minimum = Math.Max(_minimum, bounds.Right - 2 - maximumWidth);
+                    _maximum = bounds.Right - 2 - minimumWidth;
                     break;
                 case DarkSplitterType.Right:
                     Bounds = new Rectangle(bounds.Right - 2, bounds.Top, 5, bounds.Height);
-                    _minimum = bounds.Left - 2 + _control.MinimumSize.Width;
+                    _minimum = bounds.Left - 2 + minimumWidth;
+                    _maximum = parentBounds.Right - 2;
+                    if (maximumWidth > 0)
+                        _maximum = Math.Min(_maximum, bounds.Left - 2 + maximumWidth);
                     break;
                 case DarkSplitterType.Top:
                     Bounds = new Rectangle(bounds.Left, bounds.Top - 2, bounds.Width, 5);
-                    _maximum = bounds.Bottom - 2 - _control.MinimumSize.Height;
+                    _minimum = parentBounds.Top - 2;
+                    if (maximumHeight > 0)
+                        _minimum = Math.Max(_minimum, bounds.Bottom - 2 - maximumHeight);
+                    _maximum = bounds.Bottom - 2 - minimumHeight;
                     break;
                 case DarkSplitterType.Bottom:
                     Bounds = new Rectangle(bounds.Left, bounds.Bottom - 2, bounds.Width, 5);
-                    _minimum = bounds.Top - 2 + _control.MinimumSize.Height;
+                    _minimum = bounds.Top - 2 + minimumHeight;
+                    _maximum = parentBounds.Bottom - 2;
+                    if (maximumHeight > 0)
+                        _maximum = Math.Min(_maximum, bounds.Top - 2 + maximumHeight);
                     break;
             }
+
+            if (_minimum > _maximum)
+                _minimum = _maximum;
+        }
+
+        private int ClampCoordinate(int coordinate)
+        {
+            return Math.Max(_minimum, Math.Min(_maximum, coordinate));
         }
 
         #endregion

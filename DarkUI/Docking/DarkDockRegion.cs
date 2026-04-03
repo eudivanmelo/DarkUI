@@ -16,6 +16,7 @@ namespace DarkUI.Docking
         #region Field Region
 
         private List<DarkDockGroup> _groups;
+        private const int DefaultMinimumRegionSize = 50;
 
         private Form _parentForm;
         private DarkDockSplitter _splitter;
@@ -83,6 +84,7 @@ namespace DarkUI.Docking
             }
 
             dockContent.DockRegion = this;
+            RegisterContentConstraintEvents(dockContent);
             dockGroup.AddContent(dockContent);
 
             if (!Visible)
@@ -92,6 +94,7 @@ namespace DarkUI.Docking
             }
 
             PositionGroups();
+            UpdateSizeConstraints();
         }
 
         internal void InsertContent(DarkDockContent dockContent, DarkDockGroup dockGroup, DockInsertType insertType)
@@ -104,6 +107,7 @@ namespace DarkUI.Docking
             var newGroup = InsertGroup(order);
 
             dockContent.DockRegion = this;
+            RegisterContentConstraintEvents(dockContent);
             newGroup.AddContent(dockContent);
 
             if (!Visible)
@@ -113,11 +117,13 @@ namespace DarkUI.Docking
             }
 
             PositionGroups();
+            UpdateSizeConstraints();
         }
 
         internal void RemoveContent(DarkDockContent dockContent)
         {
             dockContent.DockRegion = null;
+            UnregisterContentConstraintEvents(dockContent);
 
             var group = dockContent.DockGroup;
             group.RemoveContent(dockContent);
@@ -136,6 +142,7 @@ namespace DarkUI.Docking
             }
 
             PositionGroups();
+            UpdateSizeConstraints();
         }
 
         public List<DarkDockContent> GetContents()
@@ -268,7 +275,8 @@ namespace DarkUI.Docking
 
         private void BuildProperties()
         {
-            MinimumSize = new Size(50, 50);
+            MinimumSize = new Size(DefaultMinimumRegionSize, DefaultMinimumRegionSize);
+            MaximumSize = Size.Empty;
 
             switch (DockArea)
             {
@@ -293,6 +301,85 @@ namespace DarkUI.Docking
                     Visible = false;
                     break;
             }
+        }
+
+        internal void UpdateSizeConstraints()
+        {
+            var minWidth = DefaultMinimumRegionSize;
+            var minHeight = DefaultMinimumRegionSize;
+
+            int? maxWidth = null;
+            int? maxHeight = null;
+
+            foreach (var content in GetContents())
+            {
+                var minSize = content.MinimumSize;
+                var maxSize = content.MaximumSize;
+
+                var toolWindow = content as DarkToolWindow;
+                if (toolWindow != null)
+                {
+                    minSize = toolWindow.DockedMinimumSize;
+                    maxSize = toolWindow.DockedMaximumSize;
+                }
+
+                minWidth = Math.Max(minWidth, Math.Max(0, minSize.Width));
+                minHeight = Math.Max(minHeight, Math.Max(0, minSize.Height));
+
+                if (maxSize.Width > 0)
+                    maxWidth = maxWidth.HasValue ? Math.Min(maxWidth.Value, maxSize.Width) : maxSize.Width;
+
+                if (maxSize.Height > 0)
+                    maxHeight = maxHeight.HasValue ? Math.Min(maxHeight.Value, maxSize.Height) : maxSize.Height;
+            }
+
+            if (maxWidth.HasValue && maxWidth.Value < minWidth)
+                maxWidth = minWidth;
+
+            if (maxHeight.HasValue && maxHeight.Value < minHeight)
+                maxHeight = minHeight;
+
+            MinimumSize = new Size(minWidth, minHeight);
+            MaximumSize = new Size(maxWidth ?? 0, maxHeight ?? 0);
+
+            if (DockArea == DarkDockArea.Left || DockArea == DarkDockArea.Right)
+            {
+                if (Width < MinimumSize.Width)
+                    Width = MinimumSize.Width;
+
+                if (MaximumSize.Width > 0 && Width > MaximumSize.Width)
+                    Width = MaximumSize.Width;
+            }
+            else if (DockArea == DarkDockArea.Bottom)
+            {
+                if (Height < MinimumSize.Height)
+                    Height = MinimumSize.Height;
+
+                if (MaximumSize.Height > 0 && Height > MaximumSize.Height)
+                    Height = MaximumSize.Height;
+            }
+
+            if (_splitter != null)
+                _splitter.UpdateBounds();
+        }
+
+        private void RegisterContentConstraintEvents(DarkDockContent dockContent)
+        {
+            var toolWindow = dockContent as DarkToolWindow;
+            if (toolWindow == null)
+                return;
+
+            toolWindow.DockedSizeConstraintsChanged -= ToolWindow_DockedSizeConstraintsChanged;
+            toolWindow.DockedSizeConstraintsChanged += ToolWindow_DockedSizeConstraintsChanged;
+        }
+
+        private void UnregisterContentConstraintEvents(DarkDockContent dockContent)
+        {
+            var toolWindow = dockContent as DarkToolWindow;
+            if (toolWindow == null)
+                return;
+
+            toolWindow.DockedSizeConstraintsChanged -= ToolWindow_DockedSizeConstraintsChanged;
         }
 
         private void CreateSplitter()
@@ -341,6 +428,7 @@ namespace DarkUI.Docking
             base.OnResize(eventargs);
 
             SizeGroups();
+            UpdateSizeConstraints();
         }
 
         private void ParentForm_ResizeEnd(object sender, EventArgs e)
@@ -353,8 +441,15 @@ namespace DarkUI.Docking
         {
             base.OnLayout(e);
 
+            UpdateSizeConstraints();
+
             if (_splitter != null)
                 _splitter.UpdateBounds();
+        }
+
+        private void ToolWindow_DockedSizeConstraintsChanged(object sender, EventArgs e)
+        {
+            UpdateSizeConstraints();
         }
 
         #endregion
